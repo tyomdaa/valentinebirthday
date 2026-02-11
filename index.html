@@ -3,147 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VALENTINE_QUEST_V2.0</title>
+    <title>For You ❤️</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --primary: #ff4d6d;
-            --secondary: #4CAF50;
-            --bg: #0a0a0a;
+            --primary: #ff7eb3;
+            --secondary: #ff758c;
+            --accent: #6c5ce7;
+            --text: #2d3436;
+            --glass: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.4);
         }
 
         body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            background: var(--bg); font-family: 'Courier New', Courier, monospace;
-            overflow: hidden; display: flex; justify-content: center; align-items: center;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Nunito', sans-serif;
+            overflow: hidden;
+            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Prevent selecting text while tapping */
+            user-select: none; 
+            -webkit-user-select: none;
+        }
+
+        /* FLOATING BACKGROUND BLOBS */
+        .blob {
+            position: absolute;
+            filter: blur(50px);
+            z-index: 0;
+            animation: float 10s infinite alternate;
+        }
+        .blob-1 { top: -10%; left: -10%; width: 300px; height: 300px; background: #ff9a9e; animation-delay: 0s; }
+        .blob-2 { bottom: -10%; right: -10%; width: 350px; height: 350px; background: #a18cd1; animation-delay: 2s; }
+        .blob-3 { top: 40%; left: 40%; width: 200px; height: 200px; background: #fad0c4; animation-delay: 4s; opacity: 0.6; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, -30px) scale(1.1); }
+        }
+
+        /* THE GLASS CARD */
+        #glass-card {
+            width: 85%;
+            max-width: 400px;
+            padding: 40px 30px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 30px;
+            border: 2px solid var(--glass-border);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            transition: transform 0.3s ease, height 0.3s ease;
+        }
+
+        /* MASCOT ANIMATION */
+        #mascot {
+            font-size: 80px;
+            margin-bottom: 10px;
+            display: inline-block;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .bounce { animation: bounce 1s infinite; }
+        @keyframes bounce { 
+            0%, 100% { transform: translateY(0); } 
+            50% { transform: translateY(-15px); } 
+        }
+
+        h1 {
+            color: var(--text);
+            font-weight: 900;
+            font-size: 1.8rem;
+            margin: 10px 0 5px 0;
+            line-height: 1.2;
+        }
+
+        p {
+            color: #636e72;
+            font-size: 1rem;
+            margin-bottom: 30px;
+            font-weight: 600;
+            min-height: 24px; /* Prevents layout jump */
+        }
+
+        /* BUTTON CONTAINER */
+        #btn-group {
+            position: relative;
+            height: 180px; /* Space for buttons to move */
+            width: 100%;
+        }
+
+        button {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 30px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            position: absolute; /* Allows free movement */
+            touch-action: manipulation; /* Mobile optimized */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #yesBtn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
             color: white;
+            z-index: 100;
+            left: 50%;
+            top: 20%; /* Start position */
+            transform: translate(-50%, -50%);
+            width: 140px;
         }
 
-        /* Scanline Overlay for Retro Look */
-        body::before {
-            content: " ";
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 4px, 3px 100%; z-index: 100; pointer-events: none;
+        #noBtn {
+            background: #fff;
+            color: var(--text);
+            z-index: 50;
+            left: 50%;
+            top: 60%; /* Start position */
+            transform: translate(-50%, -50%);
+            border: 2px solid #dfe6e9;
+            width: 140px;
         }
 
-        #game-container {
-            width: 85%; max-width: 380px; background: #1a1a1a;
-            border: 4px solid #fff; padding: 20px; text-align: center;
-            box-shadow: 10px 10px 0px var(--primary); position: relative; z-index: 10;
+        /* SUCCESS SCREEN */
+        #success-container {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.9);
+            z-index: 999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
         }
 
-        /* HP Bar Hook */
-        .hp-container { width: 100%; background: #333; height: 10px; border: 2px solid #fff; margin: 10px 0; }
-        #hp-fill { width: 100%; height: 100%; background: var(--secondary); transition: width 0.3s; }
-
-        h1 { font-size: 1.2rem; text-transform: uppercase; margin: 15px 0; color: #fff; }
-
-        #play-area { 
-            height: 350px; width: 100%; position: relative; 
-            border: 2px dashed #444; background: #000; overflow: hidden;
-            margin-top: 10px;
+        /* RAIN ANIMATION FOR SADNESS */
+        .rain {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 5; display: none;
+            background-image: url('https://i.imgur.com/M8a0i.png'); /* Simple rain texture */
+            animation: rain 0.3s linear infinite;
+            opacity: 0.3;
         }
+        @keyframes rain { 0% { background-position: 0 0; } 100% { background-position: 10% 100%; } }
 
-        button { 
-            font-family: 'Courier New', monospace; font-weight: bold; 
-            border: 3px solid #fff; position: absolute;
-            cursor: pointer; text-transform: uppercase;
-            touch-action: manipulation;
-        }
-
-        #yesBtn { 
-            left: 50%; top: 40%; transform: translate(-50%, -50%); 
-            background: var(--secondary); color: white; padding: 15px 30px; 
-            font-size: 1.2rem; z-index: 10; box-shadow: 4px 4px 0px #1b5e20;
-        }
-
-        #noBtn { 
-            left: 50%; top: 75%; transform: translate(-50%, -50%); 
-            background: var(--primary); color: white; padding: 10px 20px; 
-            font-size: 0.9rem; z-index: 100; box-shadow: 4px 4px 0px #800;
-        }
-
-        /* Animations */
-        @keyframes shake { 
-            0% { transform: translate(0,0); } 25% { transform: translate(5px, -5px); }
-            50% { transform: translate(-5px, 5px); } 75% { transform: translate(5px, 5px); } 100% { transform: translate(0,0); }
-        }
-        .shake { animation: shake 0.2s ease-in-out; }
-
-        #win-screen { display: none; text-align: center; }
-        .pixel-heart { font-size: 50px; animation: pulse 0.8s infinite; color: var(--primary); }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
-    <div id="game-container">
-        <div id="main-ui">
-            <div style="font-size: 10px; text-align: left; opacity: 0.7;">BOSS: VALENTINE_BOT</div>
-            <div class="hp-container"><div id="hp-fill"></div></div>
-            
-            <div class="pixel-heart" style="margin-top: 20px;">❤️</div>
-            <h1 id="question">Will you be my Valentine?</h1>
-            
-            <div id="play-area">
-                <button id="yesBtn" onclick="celebrate()">YES</button>
-                <button id="noBtn" onclick="handleNo()">NO</button>
-            </div>
-        </div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div id="rain-effect" class="rain"></div>
 
-        <div id="win-screen">
-            <h1 style="color: var(--secondary);">QUEST COMPLETE!</h1>
-            <div style="font-size: 80px; margin: 20px 0;">🎁</div>
-            <p style="color: var(--primary); font-weight: bold;">NEW ALLY ADDED: [YOU]</p>
-            <p style="font-size: 10px; opacity: 0.6;">FOREVER MODE ACTIVATED</p>
+    <div id="glass-card">
+        <div id="mascot" class="bounce">🐻</div>
+        <h1 id="main-text">Will you be my Valentine?</h1>
+        <p id="sub-text">I promise to buy you snacks! 🍫</p>
+
+        <div id="btn-group">
+            <button id="yesBtn" onclick="celebrate()">YES! ❤️</button>
+            <button id="noBtn" onclick="dodge()">No 💔</button>
         </div>
     </div>
 
+    <div id="success-container">
+        <div style="font-size: 100px;">💖</div>
+        <h1 style="font-size: 2.5rem; color: #ff758c; margin-top: 20px;">BEST DAY EVER!</h1>
+        <p style="font-size: 1.2rem; color: #555;">See you on the 14th! 🥰</p>
+    </div>
+
+    <canvas id="confetti" style="position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:9999; display:none;"></canvas>
+
     <script>
-        let hp = 100;
-        let scale = 1;
-        const noPhrases = ["MISS!", "TRY AGAIN", "BLOCK!", "REFUSED", "ERROR", "RETRYING..."];
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const mascot = document.getElementById('mascot');
+        const mainText = document.getElementById('main-text');
+        const subText = document.getElementById('sub-text');
+        const rain = document.getElementById('rain-effect');
+        const body = document.body;
 
-        function handleNo() {
-            const noBtn = document.getElementById('noBtn');
-            const yesBtn = document.getElementById('yesBtn');
-            const hpFill = document.getElementById('hp-fill');
-            const container = document.getElementById('game-container');
-            const area = document.getElementById('play-area');
+        // "The Story" - Array of stages the user goes through by clicking No
+        const stages = [
+            { text: "Are you sure?", sub: "Think about the chocolate... 🍫", emoji: "🥺" },
+            { text: "Really sure?", sub: "I'll be very sad...", emoji: "😢" },
+            { text: "Last chance!", sub: "Don't break my heart!", emoji: "😭" },
+            { text: "PLEASE!", sub: "I'm begging you!", emoji: "😖" },
+            { text: "Okay...", sub: "Just kidding, SAY YES!", emoji: "😠" }
+        ];
 
-            // 1. Reduce HP
-            hp -= 10;
-            if(hp < 0) hp = 5; // Keep a sliver of health
-            hpFill.style.width = hp + "%";
+        let clickCount = 0;
+        let yesScale = 1;
 
-            // 2. Shake Screen
-            container.classList.add('shake');
-            setTimeout(() => container.classList.remove('shake'), 200);
-
-            // 3. Move NO button to logical corners (Mobile friendly)
-            const padding = 20;
-            const x = Math.random() < 0.5 ? padding : area.clientWidth - noBtn.clientWidth - padding;
-            const y = Math.random() < 0.5 ? padding : area.clientHeight - noBtn.clientHeight - padding;
+        function dodge() {
+            // 1. ANIMATE BUTTON (The "Dodge" Logic)
+            // We calculate a random position strictly within the card boundaries
+            // so it never disappears off-screen on mobile.
+            const card = document.getElementById('btn-group');
+            const maxX = card.clientWidth - noBtn.clientWidth;
+            const maxY = card.clientHeight - noBtn.clientHeight;
             
-            noBtn.style.left = x + 'px';
-            noBtn.style.top = y + 'px';
-            noBtn.style.transform = 'none';
-            noBtn.innerText = noPhrases[Math.floor(Math.random() * noPhrases.length)];
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
 
-            // 4. YES button takes over the screen
-            scale += 0.3;
-            yesBtn.style.transform = `translate(-50%, -50%) scale(${scale})`;
+            noBtn.style.left = randomX + "px";
+            noBtn.style.top = randomY + "px";
+            noBtn.style.transform = "none"; // Reset center transform
+            noBtn.style.position = "absolute"; // Ensure it floats
+
+            // 2. UPDATE STORY & MASCOT
+            if (clickCount < stages.length) {
+                mainText.innerText = stages[clickCount].text;
+                subText.innerText = stages[clickCount].sub;
+                mascot.innerText = stages[clickCount].emoji;
+            } else {
+                // Desperation mode loop
+                const randomMsg = stages[Math.floor(Math.random() * stages.length)];
+                mainText.innerText = randomMsg.text;
+                mascot.innerText = "💔";
+            }
+
+            // 3. VISUAL EFFECTS
+            clickCount++;
             
-            // 5. Change background color intensity
-            document.body.style.backgroundColor = `rgb(${10 + (100 - hp)}, 10, 10)`;
+            // Grow Yes Button
+            yesScale += 0.2;
+            yesBtn.style.transform = `translate(-50%, -50%) scale(${yesScale})`;
+            yesBtn.style.boxShadow = `0 10px ${20 + clickCount * 5}px rgba(255, 118, 117, 0.5)`;
+
+            // Background gets darker/stormier as you say No
+            if(clickCount > 2) {
+                rain.style.display = "block";
+                body.style.background = "#636e72"; // Gloomy grey
+                mascot.classList.remove("bounce");
+                mascot.classList.add("shake"); // Shake with anger/sadness
+            }
         }
 
+        // Add shake animation class
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .shake { animation: shake 0.5s infinite; }
+            @keyframes shake { 
+                0% { transform: translate(1px, 1px) rotate(0deg); }
+                10% { transform: translate(-1px, -2px) rotate(-1deg); }
+                20% { transform: translate(-3px, 0px) rotate(1deg); }
+                30% { transform: translate(3px, 2px) rotate(0deg); }
+                40% { transform: translate(1px, -1px) rotate(1deg); }
+                50% { transform: translate(-1px, 2px) rotate(-1deg); }
+                60% { transform: translate(-3px, 1px) rotate(0deg); }
+                100% { transform: translate(1px, -2px) rotate(-1deg); }
+            }
+        `;
+        document.head.appendChild(style);
+
         function celebrate() {
-            document.getElementById('main-ui').style.display = 'none';
-            document.getElementById('win-screen').style.display = 'block';
-            document.body.style.background = '#ff4d6d';
-            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+            // Stop rain, bring back sun
+            rain.style.display = "none";
+            body.style.background = "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)";
+            
+            // Show Success Screen
+            document.getElementById('glass-card').style.display = "none";
+            const success = document.getElementById('success-container');
+            success.style.display = "flex";
+            
+            // Trigger Confetti
+            startConfetti();
+        }
+
+        // --- SIMPLE CONFETTI SCRIPT ---
+        function startConfetti() {
+            const canvas = document.getElementById('confetti');
+            canvas.style.display = 'block';
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const pieces = [];
+            for(let i=0; i<100; i++) {
+                pieces.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+                    size: Math.random() * 10 + 5,
+                    speed: Math.random() * 5 + 2
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0,0, canvas.width, canvas.height);
+                pieces.forEach(p => {
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(p.x, p.y, p.size, p.size);
+                    p.y += p.speed;
+                    if(p.y > canvas.height) p.y = -20;
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
         }
     </script>
 </body>
