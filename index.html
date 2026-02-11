@@ -3,124 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SYSTEM_OVERRIDE</title>
+    <title>A Special Note</title>
     <style>
-        :root { --neon: #0f0; --bg: #000; --err: #f00; }
-        body { margin: 0; background: var(--bg); color: var(--neon); font-family: 'Courier New', monospace; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; user-select: none; }
+        body { margin: 0; background: #fdfaf6; height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Georgia', serif; overflow: hidden; }
+        .polaroid { background: white; padding: 15px 15px 60px 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transform: rotate(-3deg); transition: all 0.5s; position: relative; z-index: 10; width: 280px; }
+        .photo-space { width: 100%; aspect-ratio: 1; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 50px; overflow: hidden; filter: grayscale(0%); transition: filter 0.5s; }
+        .caption { margin-top: 20px; text-align: center; color: #444; font-style: italic; font-size: 1.2rem; }
         
-        /* Scanline Effect */
-        .scanlines { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2)); background-size: 100% 4px; z-index: 5; pointer-events: none; }
+        #controls { position: absolute; width: 100%; height: 100%; pointer-events: none; }
+        button { pointer-events: auto; position: absolute; border: none; cursor: pointer; font-family: inherit; transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
         
-        .card { 
-            border: 2px solid var(--neon); padding: 40px; background: rgba(0, 20, 0, 0.9); 
-            box-shadow: 0 0 20px var(--neon), inset 0 0 20px var(--neon); 
-            text-align: center; position: relative; z-index: 10; max-width: 400px; width: 90%;
-        }
-
-        h1 { text-transform: uppercase; text-shadow: 0 0 10px var(--neon); animation: flicker 2s infinite; font-size: 1.5rem; }
+        #yesBtn { bottom: 15%; left: 50%; transform: translateX(-50%); background: #ff4d6d; color: white; padding: 12px 40px; border-radius: 5px; font-size: 1.1rem; z-index: 20; }
+        #noBtn { bottom: 8%; left: 50%; transform: translateX(-50%); background: transparent; color: #aaa; text-decoration: underline; font-size: 0.9rem; z-index: 5; }
         
-        #btn-zone { position: relative; height: 300px; margin-top: 20px; border: 1px dashed #003300; }
-        
-        button {
-            font-family: 'Courier New', monospace; font-weight: bold; font-size: 1.2rem;
-            border: 2px solid var(--neon); background: #000; color: var(--neon);
-            padding: 15px 30px; cursor: pointer; position: absolute; text-transform: uppercase;
-            box-shadow: 0 0 10px var(--neon); transition: transform 0.1s;
-        }
-        
-        #yesBtn { left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 20; }
-        #yesBtn:active { background: var(--neon); color: #000; }
-        
-        #noBtn { left: 50%; top: 85%; transform: translate(-50%, -50%); border-color: var(--err); color: var(--err); box-shadow: 0 0 10px var(--err); z-index: 100; transition: all 0.1s; }
-
-        /* Animations */
-        @keyframes flicker { 0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; } 20%, 24%, 55% { opacity: 0.1; } }
-        .glitch-anim { animation: glitch 0.2s cubic-bezier(.25, .46, .45, .94) both infinite; }
-        @keyframes glitch { 0% { transform: translate(0); } 20% { transform: translate(-2px, 2px); } 40% { transform: translate(-2px, -2px); } 60% { transform: translate(2px, 2px); } 80% { transform: translate(2px, -2px); } 100% { transform: translate(0); } }
-
-        #success { display: none; color: var(--neon); }
+        .petal { position: absolute; background: #ffb3c1; border-radius: 150% 0 150% 0; animation: fall 3s linear infinite; pointer-events: none; }
+        @keyframes fall { to { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
     </style>
 </head>
 <body>
-    <div class="scanlines"></div>
-    <div class="card" id="main-card">
-        <div id="ui">
-            <h1 id="title">Protocol: VALENTINE</h1>
-            <p style="font-size: 0.8rem; opacity: 0.8;">> INITIATE ROMANCE SEQUENCE?</p>
-            <div id="btn-zone">
-                <button id="yesBtn" onclick="hackSuccess()">ACCEPT</button>
-                <button id="noBtn" onclick="glitchMove()">DENY</button>
-            </div>
-        </div>
-        <div id="success">
-            <h1 style="color: #fff; text-shadow: 0 0 20px #fff;">ACCESS GRANTED</h1>
-            <p>> TARGET ACQUIRED: HEART ❤️</p>
-            <p>> STATUS: LOCKED IN</p>
-        </div>
+    <div class="polaroid" id="card">
+        <div class="photo-space" id="photo">📸</div>
+        <div class="caption" id="cap">Will you be my Valentine?</div>
+    </div>
+    <div id="controls">
+        <button id="yesBtn" onclick="bloom()">YES</button>
+        <button id="noBtn" onclick="runAway()">No</button>
     </div>
 
     <script>
-        let scale = 1;
-        const msgs = ["ERROR 404", "FATAL ERROR", "NICE TRY", "BLOCKED", "SYSTEM FAIL"];
-
-        function glitchMove() {
+        let clicks = 0;
+        function runAway() {
             const no = document.getElementById('noBtn');
             const yes = document.getElementById('yesBtn');
-            const zone = document.getElementById('btn-zone');
-            const card = document.getElementById('main-card');
-
-            // 1. VISUAL FX
-            card.classList.add('glitch-anim');
-            setTimeout(() => card.classList.remove('glitch-anim'), 200);
-            document.body.style.background = '#110000'; // Flash red
-            setTimeout(() => document.body.style.background = '#000', 100);
-
-            // 2. SMART COLLISION ENGINE
-            // We get the EXACT rectangle of the Yes button
+            const photo = document.getElementById('photo');
+            clicks++;
+            
+            // PHYSICS: Calculate position away from Yes button
             const yesRect = yes.getBoundingClientRect();
-            const zoneRect = zone.getBoundingClientRect();
-            let newX, newY, safe = false;
+            let x, y, dist;
+            do {
+                x = Math.random() * (window.innerWidth - 100);
+                y = Math.random() * (window.innerHeight - 50);
+                dist = Math.hypot(x - yesRect.left, y - yesRect.top);
+            } while (dist < 150); // Keep at least 150px away
 
-            while (!safe) {
-                // Generate random position inside the box
-                newX = Math.random() * (zone.clientWidth - no.offsetWidth);
-                newY = Math.random() * (zone.clientHeight - no.offsetHeight);
-
-                // Calculate where the NO button would be globally
-                const noGlobalLeft = zoneRect.left + newX;
-                const noGlobalTop = zoneRect.top + newY;
-
-                // Check distance from center of Yes button
-                const yesCenterX = yesRect.left + yesRect.width / 2;
-                const yesCenterY = yesRect.top + yesRect.height / 2;
-                const noCenterX = noGlobalLeft + no.offsetWidth / 2;
-                const noCenterY = noGlobalTop + no.offsetHeight / 2;
-
-                const distance = Math.hypot(yesCenterX - noCenterX, yesCenterY - noCenterY);
-
-                // If distance is large enough (radius check), it is SAFE
-                // The 80 is the buffer zone in pixels
-                if (distance > (yesRect.width / 2 + no.offsetWidth / 2 + 30)) {
-                    safe = true;
-                }
-            }
-
-            no.style.left = newX + 'px';
-            no.style.top = newY + 'px';
-            no.style.transform = 'none'; // Remove centering transform
-            no.innerText = msgs[Math.floor(Math.random() * msgs.length)];
-
-            // 3. SCALE YES BUTTON
-            scale += 0.3;
-            yes.style.transform = `translate(-50%, -50%) scale(${scale})`;
+            no.style.left = x + 'px';
+            no.style.top = y + 'px';
+            no.style.transform = 'none';
+            
+            // FADE PHOTO
+            photo.style.filter = `grayscale(${clicks * 20}%)`;
+            photo.innerText = clicks > 3 ? "😢" : "📸";
         }
 
-        function hackSuccess() {
-            document.getElementById('ui').style.display = 'none';
-            document.getElementById('success').style.display = 'block';
-            document.querySelector('.card').style.border = '2px solid #fff';
-            document.querySelector('.card').style.boxShadow = '0 0 50px #fff';
+        function bloom() {
+            document.getElementById('photo').style.filter = "grayscale(0%)";
+            document.getElementById('photo').innerText = "💖";
+            document.getElementById('cap').innerText = "Best Day Ever!";
+            document.getElementById('noBtn').style.display = "none";
+            for(let i=0; i<30; i++) {
+                setTimeout(() => {
+                    const p = document.createElement('div');
+                    p.className = 'petal';
+                    p.style.left = Math.random() * 100 + 'vw';
+                    p.style.width = Math.random() * 15 + 10 + 'px';
+                    p.style.height = p.style.width;
+                    document.body.appendChild(p);
+                }, i * 100);
+            }
         }
     </script>
-</body>
-</html>
