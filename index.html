@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>System OS v3.2</title>
+    <title>System OS v3.4</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&family=Playfair+Display:ital,wght@1,500&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     
     <style>
@@ -73,25 +73,21 @@
         .win-close { color: #007aff; font-size: 17px; font-weight: 600; cursor: pointer; }
         .win-body { flex: 1; overflow-y: auto; padding: 25px; -webkit-overflow-scrolling: touch; }
 
-        /* Photo Wall */
+        /* --- CUSTOM CONTENT STYLES --- */
         .photo-wall { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .photo-card { height: 160px; border-radius: 12px; overflow: hidden; position: relative; background: #e5e5ea; }
         .photo-card img { width: 100%; height: 100%; object-fit: cover; }
-        .photo-caption { position: absolute; bottom: 0; width: 100%; background: linear-gradient(transparent, rgba(0,0,0,0.8)); color: white; padding: 10px 5px 5px 5px; font-size: 10px; text-align: center; }
         .archive-lock { position: absolute; inset: 0; background: #f2f2f7; z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; }
         .btn-unlock { background: #007aff; color: white; border: none; padding: 12px 24px; border-radius: 20px; font-size: 16px; font-weight: 600; margin-top: 20px; cursor: pointer; }
 
-        /* Notes & Diary */
         .note-page { background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border-left: 5px solid #ffcc00; }
-        .diary-input { width: 100%; border: none; border-radius: 15px; padding: 20px; font-family: inherit; font-size: 16px; background: white; margin-bottom: 20px; height: 250px; resize: none; outline: none; }
-        .btn-save { width: 100%; background: #007aff; color: white; border: none; padding: 15px; border-radius: 15px; font-weight: 600; font-size: 16px; cursor: pointer; transition: 0.3s; }
-        .btn-save.success { background: #34c759; }
+        
+        .diary-input { width: 100%; border: none; border-radius: 15px; padding: 20px; font-family: inherit; font-size: 16px; background: white; margin-bottom: 20px; height: 150px; resize: none; outline: none; }
+        .btn-send { width: 100%; background: #007aff; color: white; border: none; padding: 15px; border-radius: 15px; font-weight: 600; font-size: 16px; cursor: pointer; transition: 0.3s; }
 
-        /* Music */
         .record-player { width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, #444 10%, #111 100%); margin: 20px auto; display: flex; align-items: center; justify-content: center; position: relative; }
         .spinning { animation: rotate 4s linear infinite; }
 
-        /* Gift */
         .voucher-box { border: 3px dashed #ff3b30; padding: 30px; border-radius: 20px; background: white; margin: 30px 0; }
         
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -119,7 +115,7 @@
             <div class="pin-dots" id="js-dots-container">
                 <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
             </div>
-            <div id="js-passcode-hint">Hint: It's your birthday (DDMM)</div>
+            <div id="js-passcode-hint">Hint: Your Birthday (DDMM)</div>
             <div class="numpad">
                 <div class="key" onclick="pressPin(1)">1</div><div class="key" onclick="pressPin(2)">2</div><div class="key" onclick="pressPin(3)">3</div>
                 <div class="key" onclick="pressPin(4)">4</div><div class="key" onclick="pressPin(5)">5</div><div class="key" onclick="pressPin(6)">6</div>
@@ -141,7 +137,7 @@
             <div class="app-item" onclick="openWin('music')">
                 <div class="app-icon" style="background: #007aff;">🎵</div><div class="app-label">Music</div>
             </div>
-            <div class="app-item" onclick="openWin('diary')">
+            <div class="app-item" onclick="openWin('msg')">
                 <div class="app-icon" style="background: #34c759;">💬</div><div class="app-label">Message</div>
             </div>
             <div class="app-item" onclick="openWin('gift')">
@@ -151,28 +147,28 @@
     </div>
 
     <div id="win-photos" class="window">
-        <div class="win-header"><span class="win-close" onclick="closeWin('photos')">Done</span><span style="font-weight:700">Photos</span><span></span></div>
+        <div class="win-header"><span class="win-close" onclick="closeWin('photos')">Done</span><span style="font-weight:700">Archive</span><span></span></div>
         <div class="win-body" style="position:relative;">
             <div id="js-photo-lock" class="archive-lock">
                 <div style="font-size:50px; margin-bottom:15px">🔒</div>
-                <h3>Personal Archive</h3>
-                <p style="font-size:14px; color:#666; line-height:1.4">Memories from the past.<br>Open when you're ready.</p>
+                <h3>Locked Folder</h3>
+                <p style="font-size:14px; color:#666">Open when you're ready to look back.</p>
                 <button class="btn-unlock" onclick="unlockPhotos()">Open Anyway</button>
             </div>
             <div class="photo-wall" id="js-photo-grid" style="display:none; animation: fadeIn 1s;"></div>
         </div>
     </div>
 
-    <div id="win-diary" class="window">
-        <div class="win-header"><span class="win-close" onclick="closeWin('diary')">Close</span><span style="font-weight:700">Message</span><span></span></div>
+    <div id="win-msg" class="window">
+        <div class="win-header"><span class="win-close" onclick="closeWin('msg')">Cancel</span><span style="font-weight:700">New Message</span><span></span></div>
         <div class="win-body" style="background:#f2f2f7">
-            <p style="color:#666; font-size:13px; margin-bottom:15px; text-align:center">Type a note for Tyom. It will be saved here.</p>
-            <textarea id="diary-text" class="diary-input" placeholder="What's on your mind?"></textarea>
-            <button id="btn-save-diary" class="btn-save" onclick="saveDiary()">Save to System 💾</button>
+            <p style="color:#666; font-size:13px; margin-bottom:15px; text-align:center">This goes straight to Tyom.</p>
+            <textarea id="diary-text" class="diary-input" placeholder="Type something here..."></textarea>
+            <button id="btn-send-remote" class="btn-send" onclick="sendRemoteMessage()">Send Message 🚀</button>
         </div>
     </div>
 
-    <div id="win-notes" class="window"><div class="win-header"><span class="win-close" onclick="closeWin('notes')">Done</span><span style="font-weight:700">Personal</span><span></span></div><div class="win-body" id="js-notes-list"></div></div>
+    <div id="win-notes" class="window"><div class="win-header"><span class="win-close" onclick="closeWin('notes')">Done</span><span style="font-weight:700">Notes</span><span></span></div><div class="win-body" id="js-notes-list"></div></div>
     
     <div id="win-music" class="window">
         <div class="win-header"><span class="win-close" onclick="closeWin('music')">Done</span><span style="font-weight:700">Now Playing</span><span></span></div>
@@ -207,6 +203,9 @@
     <script>
         const CONFIG = {
             passcode: "1402",
+            email: "azureso855@gmail.com",
+            // PASTE YOUR FORMSPREE LINK IN THE QUOTES BELOW (LINE 268)
+            formspreeUrl: "PASTE_YOUR_FORMSPREE_LINK_HERE", 
             photos: [
                 { url: "https://raw.githubusercontent.com/tyomdaa/valentinebirthday/main/5226989699501593622%281%29.jpg", caption: "The beginning." },
                 { url: "https://raw.githubusercontent.com/tyomdaa/valentinebirthday/main/5226989699501593632%281%29.jpg", caption: "My favorite day." },
@@ -216,7 +215,6 @@
             music: { url: "https://raw.githubusercontent.com/tyomdaa/valentinebirthday/main/lenkker.mp3", title: "Our Song" },
             notes: [
                 { title: "On Your Resilience", text: "I've always admired how you handle the world. You have a strength that most people never see." },
-                { title: "The Best Sound", text: "Your laugh is still the best sound I've ever heard. Don't ever let the world quiet it down." },
                 { title: "Happy Birthday", text: "I'm still rooting for you to hit every goal you've set for yourself. I know you will." }
             ],
             finalMessage: "I built this to show you that even though chapters change, the respect I have for your story doesn't.",
@@ -227,8 +225,34 @@
         let currentPin = "";
         let viewedApps = { photos: false, notes: false, music: false };
 
+        // SILENT SYNC FUNCTION (Option B)
+        async function sendRemoteMessage() {
+            const text = document.getElementById('diary-text').value;
+            const btn = document.getElementById('btn-send-remote');
+            
+            if(!text) return alert("Please type a message first!");
+            if(CONFIG.formspreeUrl.includes("https://formspree.io/f/mnjbddgn")) return alert("Dev Note: You forgot to add your link to Line 268!");
+
+            btn.innerText = "Sending...";
+            btn.disabled = true;
+
+            try {
+                await fetch(CONFIG.formspreeUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text, _subject: "Message from her Phone" })
+                });
+                btn.innerText = "Sent! ✅";
+                btn.style.background = "#34c759";
+                document.getElementById('diary-text').value = ""; // Clear for privacy
+            } catch (error) {
+                btn.innerText = "Error! Try again.";
+                btn.disabled = false;
+            }
+        }
+
         function runBoot() {
-            const logs = ["Initializing System...", "Kernel v3.2 Loaded", "Storage Linked", "Access Granted"];
+            const logs = ["Initializing System...", "Kernel v3.4 Loaded", "Secure Link Active", "Access Granted"];
             let i = 0;
             const interval = setInterval(() => {
                 if(i < logs.length) {
@@ -241,12 +265,11 @@
                     document.getElementById('lock-screen').style.display = 'flex';
                     initSystem();
                 }
-            }, 500);
+            }, 600);
         }
 
         function initSystem() {
             updateTime();
-            // Load Content
             const photoGrid = document.getElementById('js-photo-grid');
             CONFIG.photos.forEach(p => photoGrid.innerHTML += `<div class="photo-card"><img src="${p.url}"><div class="photo-caption">${p.caption}</div></div>`);
             
@@ -257,25 +280,6 @@
             document.getElementById('js-final-message').innerText = CONFIG.finalMessage;
             document.getElementById('js-voucher-text').innerText = CONFIG.voucher;
             document.getElementById('js-signature').innerText = CONFIG.signature;
-
-            // LOAD SAVED DIARY MESSAGE
-            const savedMessage = localStorage.getItem('birthday_diary');
-            if(savedMessage) {
-                document.getElementById('diary-text').value = savedMessage;
-            }
-        }
-
-        // SAVE DIARY FUNCTION
-        function saveDiary() {
-            const text = document.getElementById('diary-text').value;
-            localStorage.setItem('birthday_diary', text);
-            const btn = document.getElementById('btn-save-diary');
-            btn.innerText = "Saved Successfully! ✅";
-            btn.classList.add('success');
-            setTimeout(() => {
-                btn.innerText = "Save to System 💾";
-                btn.classList.remove('success');
-            }, 2000);
         }
 
         function updateTime() {
@@ -288,6 +292,7 @@
         }
 
         function togglePin(show) { document.getElementById('pin-ui').style.display = show ? 'flex' : 'none'; }
+        
         function pressPin(n) {
             if(currentPin.length < 4) {
                 currentPin += n;
@@ -300,7 +305,9 @@
                 }
             }
         }
+
         function clearPin() { currentPin = ""; document.querySelectorAll('.pin-dot').forEach(d => d.className = 'pin-dot'); }
+        
         function unlockPhone() {
             document.getElementById('lock-screen').style.transform = "translateY(-100%)";
             setTimeout(() => { document.getElementById('lock-screen').style.display = "none"; document.getElementById('desktop').style.display = "flex"; }, 600);
@@ -308,9 +315,11 @@
 
         function openWin(id) {
             document.getElementById('win-' + id).classList.add('active');
-            if(id !== 'photos' && id !== 'diary' && viewedApps.hasOwnProperty(id)) checkUnlock(id);
+            if(id !== 'photos' && id !== 'msg' && viewedApps.hasOwnProperty(id)) checkUnlock(id);
         }
+        
         function closeWin(id) { document.getElementById('win-' + id).classList.remove('active'); }
+
         function unlockPhotos() {
             document.getElementById('js-photo-lock').style.display = 'none';
             document.getElementById('js-photo-grid').style.display = 'grid';
