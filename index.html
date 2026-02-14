@@ -3,164 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Happy Birthday ✨</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,700&family=Inter:wght@300;500&display=swap" rel="stylesheet">
+    <title>SECURE ARCHIVE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #d4af37; --bg: #05070a; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
-        
-        #canvas-bg { position: fixed; top: 0; left: 0; z-index: 1; }
-        
-        .interface { position: relative; z-index: 10; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; }
-        
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 40px; border-radius: 20px;
-            max-width: 80%; pointer-events: auto;
-            transition: all 1s ease;
+        :root {
+            --neon: #00f3ff;
+            --dark: #0a0a12;
+            --glass: rgba(255, 255, 255, 0.05);
+            --error: #ff2a2a;
         }
 
-        h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 10px; color: var(--gold); }
-        .memory-bubble {
-            position: absolute; padding: 15px 25px; background: rgba(255,255,255,0.1);
-            border-radius: 50px; border: 1px solid var(--gold);
-            font-size: 0.9rem; color: #fff; pointer-events: auto;
-            cursor: pointer; animation: float 4s infinite alternate ease-in-out;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: var(--dark);
+            color: var(--neon);
+            font-family: 'Share Tech Mono', monospace;
+            overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        @keyframes float { from { transform: translateY(0); } to { transform: translateY(-20px); } }
-
-        #final-letter {
-            display: none; opacity: 0; transition: opacity 2s;
+        /* MATRIX BOOT SEQUENCE */
+        #boot-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, #1a1a2e 0%, #05070a 100%);
-            z-index: 100; justify-content: center; align-items: center; pointer-events: auto;
+            background: #000; z-index: 999;
+            padding: 20px; box-sizing: border-box;
+            display: flex; flex-direction: column; justify-content: flex-end;
+        }
+        .log-line { color: #0f0; margin: 2px 0; font-size: 12px; opacity: 0; animation: fadeIn 0.1s forwards; }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        /* MAIN VAULT UI */
+        #vault-ui {
+            display: none; /* Hidden until boot finishes */
+            width: 90%; max-width: 380px;
+            text-align: center;
+            opacity: 0; transition: opacity 1s;
         }
 
-        .letter-content { max-width: 500px; padding: 40px; line-height: 1.8; font-family: 'Playfair Display', serif; font-style: italic; }
+        .lock-icon { font-size: 50px; margin-bottom: 20px; color: var(--neon); text-shadow: 0 0 20px var(--neon); }
         
-        .btn {
-            background: transparent; border: 1px solid var(--gold); color: var(--gold);
-            padding: 10px 25px; border-radius: 50px; cursor: pointer; margin-top: 20px;
-            font-family: 'Inter'; text-transform: uppercase; letter-spacing: 2px;
+        h1 { font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 2px; margin-bottom: 5px; font-size: 1.5rem; }
+        p { font-size: 0.9rem; color: rgba(255,255,255,0.7); margin-bottom: 30px; }
+
+        /* PASSWORD DISPLAY */
+        .pin-display {
+            background: rgba(0,0,0,0.5); border: 1px solid var(--neon);
+            padding: 15px; font-size: 2rem; letter-spacing: 10px;
+            margin-bottom: 30px; height: 60px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+            border-radius: 5px;
         }
+
+        /* KEYPAD */
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .key {
+            background: var(--glass); border: 1px solid rgba(0,243,255,0.3);
+            color: white; padding: 20px; font-size: 1.2rem;
+            cursor: pointer; border-radius: 10px;
+            transition: all 0.2s; user-select: none;
+        }
+        .key:active { background: var(--neon); color: black; box-shadow: 0 0 20px var(--neon); }
+        .key-del { color: var(--error); border-color: rgba(255, 42, 42, 0.3); }
+
+        /* SUCCESS SCREEN */
+        #success-screen {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%);
+            z-index: 100; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(20px);
+            padding: 40px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2);
+            max-width: 85%; transform: scale(0.8); opacity: 0;
+            animation: popUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        @keyframes popUp { to { transform: scale(1); opacity: 1; } }
+
+        /* Animations */
+        .shake { animation: shake 0.3s ease-in-out; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+
+        /* Confetti Canvas */
+        #confetti { position: absolute; top:0; left:0; pointer-events:none; }
     </style>
 </head>
 <body>
 
-    <canvas id="canvas-bg"></canvas>
+    <div id="boot-screen"></div>
 
-    <div class="interface" id="intro">
-        <div class="glass-card">
-            <h1>Happy Birthday.</h1>
-            <p>I built this for you. Your birthday is a constellation of moments that matter.</p>
-            <p style="font-size: 0.8rem; color: var(--gold);">Collect the 5 stars in the sky.</p>
-            <button class="btn" style="pointer-events: auto;" onclick="start()">Enter the Sky</button>
+    <div id="vault-ui">
+        <div class="lock-icon">🔒</div>
+        <h1>SECURE VAULT</h1>
+        <p>ENTER BIOMETRIC DATE (DDMM)</p>
+        
+        <div class="pin-display" id="display">_ _ _ _</div>
+        
+        <div class="keypad">
+            <div class="key" onclick="press(1)">1</div>
+            <div class="key" onclick="press(2)">2</div>
+            <div class="key" onclick="press(3)">3</div>
+            <div class="key" onclick="press(4)">4</div>
+            <div class="key" onclick="press(5)">5</div>
+            <div class="key" onclick="press(6)">6</div>
+            <div class="key" onclick="press(7)">7</div>
+            <div class="key" onclick="press(8)">8</div>
+            <div class="key" onclick="press(9)">9</div>
+            <div class="key key-del" onclick="clearPin()">C</div>
+            <div class="key" onclick="press(0)">0</div>
+            <div class="key" style="color: var(--neon)" onclick="checkPin()">⏎</div>
         </div>
     </div>
 
-    <div id="memory-field"></div>
-
-    <div id="final-letter">
-        <div class="letter-content">
-            <p id="letter-text"></p>
-            <div style="text-align: right; margin-top: 30px;">— [Your Name]</div>
-            <center><button class="btn" onclick="location.reload()">Replay</button></center>
+    <div id="success-screen">
+        <canvas id="confetti"></canvas>
+        <div class="card">
+            <h1 style="color: white; font-size: 2.5rem; margin-bottom: 10px;">Happy Birthday! 🎉</h1>
+            <p style="font-family: 'Montserrat'; line-height: 1.6; color: #ddd;">
+                Level up complete. <br><br>
+                I hope this year brings you everything you've been working for. 
+                You deserve the best.<br><br>
+                - [Your Name]
+            </p>
         </div>
     </div>
 
     <script>
-        const canvas = document.getElementById('canvas-bg');
-        const ctx = canvas.getContext('2d');
-        let stars = [];
-        let collected = 0;
-
-        // 1. ADD YOUR MEMORIES HERE
-        const memories = [
-            "The time we laughed at [Inside Joke]",
-            "That first trip to [Place Name]",
-            "The way you look when you're [Happy/Focused]",
-            "Our favorite rainy day at [Location]",
-            "The way we used to [Shared Habit]"
+        // --- CONFIGURATION ---
+        const correctPIN = "1402"; // CHANGE THIS TO HER BIRTHDAY (DayMonth, e.g., 1402 for Feb 14)
+        
+        // --- BOOT SEQUENCE LOGIC ---
+        const bootScreen = document.getElementById('boot-screen');
+        const logs = [
+            "INITIALIZING SYSTEM...",
+            "LOADING KERNEL...",
+            "ACCESSING SECURE SERVER...",
+            "BYPASSING FIREWALL...",
+            "RETRIEVING ENCRYPTED PACKAGE...",
+            "DECRYPTING USER DATA...",
+            "SYSTEM READY."
         ];
-
-        // 2. YOUR FINAL BIRTHDAY MESSAGE
-        const finalMessage = "I know things have been quiet lately, but I couldn't let today pass without reminding you how much light you bring into the world. You deserve a year as beautiful as the memories we share. Happy Birthday, [Her Name]. I'm still rooting for you.";
-
-        function start() {
-            document.getElementById('intro').style.display = 'none';
-            spawnMemories();
-        }
-
-        function spawnMemories() {
-            const field = document.getElementById('memory-field');
-            memories.forEach((text, i) => {
-                const m = document.createElement('div');
-                m.className = 'memory-bubble';
-                m.innerText = "✨";
-                m.style.left = Math.random() * 70 + 15 + "vw";
-                m.style.top = Math.random() * 70 + 15 + "vh";
-                m.style.animationDelay = i * 0.5 + "s";
-                m.onclick = () => {
-                    m.innerText = text;
-                    m.style.background = "rgba(212, 175, 55, 0.2)";
-                    m.style.pointerEvents = "none";
-                    collected++;
-                    if(collected === memories.length) setTimeout(showLetter, 3000);
-                };
-                field.appendChild(m);
-            });
-        }
-
-        function showLetter() {
-            const letter = document.getElementById('final-letter');
-            letter.style.display = 'flex';
-            setTimeout(() => {
-                letter.style.opacity = '1';
-                typeWriter();
-            }, 100);
-        }
-
-        function typeWriter() {
-            let i = 0;
-            const text = finalMessage;
-            function type() {
-                if (i < text.length) {
-                    document.getElementById('letter-text').innerHTML += text.charAt(i);
-                    i++;
-                    setTimeout(type, 50);
-                }
+        
+        let logIndex = 0;
+        function runBoot() {
+            if(logIndex < logs.length) {
+                const line = document.createElement('div');
+                line.className = 'log-line';
+                line.innerText = `> ${logs[logIndex]}`;
+                bootScreen.appendChild(line);
+                logIndex++;
+                setTimeout(runBoot, Math.random() * 300 + 100);
+            } else {
+                setTimeout(() => {
+                    bootScreen.style.display = 'none';
+                    const ui = document.getElementById('vault-ui');
+                    ui.style.display = 'block';
+                    setTimeout(() => ui.style.opacity = 1, 50);
+                }, 800);
             }
-            type();
+        }
+        window.onload = runBoot;
+
+        // --- PIN LOGIC ---
+        let currentPin = "";
+        const display = document.getElementById('display');
+
+        function press(num) {
+            if(currentPin.length < 4) {
+                currentPin += num;
+                updateDisplay();
+                if (navigator.vibrate) navigator.vibrate(20);
+            }
         }
 
-        // Star background logic
-        function init() {
+        function clearPin() {
+            currentPin = "";
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            // Show asterisks instead of numbers for security look
+            let str = "";
+            for(let i=0; i<4; i++) {
+                if(i < currentPin.length) str += "* ";
+                else str += "_ ";
+            }
+            display.innerText = str;
+        }
+
+        function checkPin() {
+            if(currentPin === correctPIN) {
+                // SUCCESS
+                document.getElementById('vault-ui').style.display = 'none';
+                document.getElementById('success-screen').style.display = 'flex';
+                startConfetti();
+                if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+            } else {
+                // FAILURE
+                currentPin = "";
+                updateDisplay();
+                const ui = document.getElementById('vault-ui');
+                ui.classList.add('shake');
+                display.style.borderColor = "var(--error)";
+                display.style.color = "var(--error)";
+                setTimeout(() => {
+                    ui.classList.remove('shake');
+                    display.style.borderColor = "var(--neon)";
+                    display.style.color = "var(--neon)";
+                }, 500);
+                if (navigator.vibrate) navigator.vibrate(200);
+            }
+        }
+
+        // --- CONFETTI ENGINE ---
+        function startConfetti() {
+            const canvas = document.getElementById('confetti');
+            const ctx = canvas.getContext('2d');
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+            
+            let particles = [];
+            const colors = ['#00f3ff', '#ff00e6', '#ffde00', '#ffffff'];
+
             for(let i=0; i<150; i++) {
-                stars.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, size: Math.random()*1.5, speed: Math.random()*0.05});
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    vx: Math.random() * 4 - 2,
+                    vy: Math.random() * 5 + 2,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    size: Math.random() * 5 + 2
+                });
             }
-        }
 
-        function animate() {
-            ctx.clearRect(0,0,canvas.width, canvas.height);
-            ctx.fillStyle = "white";
-            stars.forEach(s => {
-                ctx.beginPath();
-                ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
-                ctx.fill();
-                s.y -= s.speed;
-                if(s.y < 0) s.y = canvas.height;
-            });
-            requestAnimationFrame(animate);
+            function animate() {
+                ctx.clearRect(0,0,canvas.width, canvas.height);
+                particles.forEach(p => {
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+                    ctx.fill();
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if(p.y > canvas.height) p.y = -20;
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
         }
-
-        init();
-        animate();
     </script>
 </body>
 </html>
