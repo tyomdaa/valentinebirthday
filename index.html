@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>System OS v3.0 - Happy Birthday</title>
+    <title>System OS v3.2</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&family=Playfair+Display:ital,wght@1,500&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     
     <style>
@@ -73,23 +73,19 @@
         .win-close { color: #007aff; font-size: 17px; font-weight: 600; cursor: pointer; }
         .win-body { flex: 1; overflow-y: auto; padding: 25px; -webkit-overflow-scrolling: touch; }
 
-        /* CUSTOM CONTENT STYLES */
-        /* Photos */
+        /* Photo Wall */
         .photo-wall { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .photo-card { height: 160px; border-radius: 12px; overflow: hidden; position: relative; background: #e5e5ea; }
         .photo-card img { width: 100%; height: 100%; object-fit: cover; }
         .photo-caption { position: absolute; bottom: 0; width: 100%; background: linear-gradient(transparent, rgba(0,0,0,0.8)); color: white; padding: 10px 5px 5px 5px; font-size: 10px; text-align: center; }
-        
-        /* Photo Lock Overlay */
         .archive-lock { position: absolute; inset: 0; background: #f2f2f7; z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; }
         .btn-unlock { background: #007aff; color: white; border: none; padding: 12px 24px; border-radius: 20px; font-size: 16px; font-weight: 600; margin-top: 20px; cursor: pointer; }
 
-        /* Notes */
+        /* Notes & Diary */
         .note-page { background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border-left: 5px solid #ffcc00; }
-        
-        /* Message App */
-        .msg-input { width: 100%; border: none; border-radius: 15px; padding: 20px; font-family: inherit; font-size: 16px; background: white; margin-bottom: 20px; height: 150px; resize: none; outline: none; }
-        .btn-send { width: 100%; background: #34c759; color: white; border: none; padding: 15px; border-radius: 15px; font-weight: 600; font-size: 16px; cursor: pointer; }
+        .diary-input { width: 100%; border: none; border-radius: 15px; padding: 20px; font-family: inherit; font-size: 16px; background: white; margin-bottom: 20px; height: 250px; resize: none; outline: none; }
+        .btn-save { width: 100%; background: #007aff; color: white; border: none; padding: 15px; border-radius: 15px; font-weight: 600; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        .btn-save.success { background: #34c759; }
 
         /* Music */
         .record-player { width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, #444 10%, #111 100%); margin: 20px auto; display: flex; align-items: center; justify-content: center; position: relative; }
@@ -145,7 +141,7 @@
             <div class="app-item" onclick="openWin('music')">
                 <div class="app-icon" style="background: #007aff;">🎵</div><div class="app-label">Music</div>
             </div>
-            <div class="app-item" onclick="openWin('msg')">
+            <div class="app-item" onclick="openWin('diary')">
                 <div class="app-icon" style="background: #34c759;">💬</div><div class="app-label">Message</div>
             </div>
             <div class="app-item" onclick="openWin('gift')">
@@ -160,19 +156,19 @@
             <div id="js-photo-lock" class="archive-lock">
                 <div style="font-size:50px; margin-bottom:15px">🔒</div>
                 <h3>Personal Archive</h3>
-                <p style="font-size:14px; color:#666; line-height:1.4">This folder contains memories from the past.<br>Only open it if you're in the mood to look back.</p>
+                <p style="font-size:14px; color:#666; line-height:1.4">Memories from the past.<br>Open when you're ready.</p>
                 <button class="btn-unlock" onclick="unlockPhotos()">Open Anyway</button>
             </div>
             <div class="photo-wall" id="js-photo-grid" style="display:none; animation: fadeIn 1s;"></div>
         </div>
     </div>
 
-    <div id="win-msg" class="window">
-        <div class="win-header"><span class="win-close" onclick="closeWin('msg')">Cancel</span><span style="font-weight:700">New Message</span><span></span></div>
+    <div id="win-diary" class="window">
+        <div class="win-header"><span class="win-close" onclick="closeWin('diary')">Close</span><span style="font-weight:700">Message</span><span></span></div>
         <div class="win-body" style="background:#f2f2f7">
-            <p style="color:#666; font-size:13px; margin-bottom:15px; text-align:center">This sends directly to my email.</p>
-            <textarea id="msg-text" class="msg-input" placeholder="Type something here..."></textarea>
-            <button class="btn-send" onclick="sendEmail()">Send Message 🚀</button>
+            <p style="color:#666; font-size:13px; margin-bottom:15px; text-align:center">Type a note for Tyom. It will be saved here.</p>
+            <textarea id="diary-text" class="diary-input" placeholder="What's on your mind?"></textarea>
+            <button id="btn-save-diary" class="btn-save" onclick="saveDiary()">Save to System 💾</button>
         </div>
     </div>
 
@@ -182,7 +178,7 @@
         <div class="win-header"><span class="win-close" onclick="closeWin('music')">Done</span><span style="font-weight:700">Now Playing</span><span></span></div>
         <div class="win-body" style="text-align:center; padding-top:40px">
             <div class="record-player" id="js-record"><div style="font-size:40px">🎵</div></div>
-            <h2 id="js-song-name" style="margin-bottom:20px; font-size:18px">Loading...</h2>
+            <h2 id="js-song-name" style="margin-bottom:20px; font-size:18px">Our Song</h2>
             <div style="font-size:60px; cursor:pointer" id="js-play-icon" onclick="toggleAudio()">▶️</div>
             <audio id="js-audio-element" loop></audio>
         </div>
@@ -211,8 +207,6 @@
     <script>
         const CONFIG = {
             passcode: "1402",
-            passcodeHint: "Hint: It's your birthday (DDMM)",
-            myEmail: "azureso855@gmail.com", // <--- CHANGE THIS TO YOUR EMAIL!
             photos: [
                 { url: "https://raw.githubusercontent.com/tyomdaa/valentinebirthday/main/5226989699501593622%281%29.jpg", caption: "The beginning." },
                 { url: "https://raw.githubusercontent.com/tyomdaa/valentinebirthday/main/5226989699501593632%281%29.jpg", caption: "My favorite day." },
@@ -234,7 +228,7 @@
         let viewedApps = { photos: false, notes: false, music: false };
 
         function runBoot() {
-            const logs = ["Initializing System...", "Kernel v3.0 Loaded", "Media Partition Decrypted", "Access Granted"];
+            const logs = ["Initializing System...", "Kernel v3.2 Loaded", "Storage Linked", "Access Granted"];
             let i = 0;
             const interval = setInterval(() => {
                 if(i < logs.length) {
@@ -252,22 +246,36 @@
 
         function initSystem() {
             updateTime();
-            // Load Photos
+            // Load Content
             const photoGrid = document.getElementById('js-photo-grid');
-            CONFIG.photos.forEach(p => {
-                photoGrid.innerHTML += `<div class="photo-card"><img src="${p.url}"><div class="photo-caption">${p.caption}</div></div>`;
-            });
-            // Load Notes
+            CONFIG.photos.forEach(p => photoGrid.innerHTML += `<div class="photo-card"><img src="${p.url}"><div class="photo-caption">${p.caption}</div></div>`);
+            
             const noteList = document.getElementById('js-notes-list');
-            CONFIG.notes.forEach(n => {
-                noteList.innerHTML += `<div class="note-page"><div class="note-title">${n.title}</div><div class="note-text">${n.text}</div></div>`;
-            });
-            // Load Music & Text
+            CONFIG.notes.forEach(n => noteList.innerHTML += `<div class="note-page"><div class="note-title">${n.title}</div><div class="note-text">${n.text}</div></div>`);
+            
             document.getElementById('js-audio-element').src = CONFIG.music.url;
-            document.getElementById('js-song-name').innerText = CONFIG.music.title;
             document.getElementById('js-final-message').innerText = CONFIG.finalMessage;
             document.getElementById('js-voucher-text').innerText = CONFIG.voucher;
             document.getElementById('js-signature').innerText = CONFIG.signature;
+
+            // LOAD SAVED DIARY MESSAGE
+            const savedMessage = localStorage.getItem('birthday_diary');
+            if(savedMessage) {
+                document.getElementById('diary-text').value = savedMessage;
+            }
+        }
+
+        // SAVE DIARY FUNCTION
+        function saveDiary() {
+            const text = document.getElementById('diary-text').value;
+            localStorage.setItem('birthday_diary', text);
+            const btn = document.getElementById('btn-save-diary');
+            btn.innerText = "Saved Successfully! ✅";
+            btn.classList.add('success');
+            setTimeout(() => {
+                btn.innerText = "Save to System 💾";
+                btn.classList.remove('success');
+            }, 2000);
         }
 
         function updateTime() {
@@ -293,7 +301,6 @@
             }
         }
         function clearPin() { currentPin = ""; document.querySelectorAll('.pin-dot').forEach(d => d.className = 'pin-dot'); }
-        
         function unlockPhone() {
             document.getElementById('lock-screen').style.transform = "translateY(-100%)";
             setTimeout(() => { document.getElementById('lock-screen').style.display = "none"; document.getElementById('desktop').style.display = "flex"; }, 600);
@@ -301,22 +308,13 @@
 
         function openWin(id) {
             document.getElementById('win-' + id).classList.add('active');
-            if(id !== 'photos' && viewedApps.hasOwnProperty(id)) checkUnlock(id); // Photos handles its own unlock
+            if(id !== 'photos' && id !== 'diary' && viewedApps.hasOwnProperty(id)) checkUnlock(id);
         }
         function closeWin(id) { document.getElementById('win-' + id).classList.remove('active'); }
-
-        // NEW: Unlock Photos Function
         function unlockPhotos() {
             document.getElementById('js-photo-lock').style.display = 'none';
             document.getElementById('js-photo-grid').style.display = 'grid';
             checkUnlock('photos');
-        }
-
-        // NEW: Send Email Function
-        function sendEmail() {
-            const msg = document.getElementById('msg-text').value;
-            if(!msg) return alert("Please type a message first!");
-            window.location.href = `mailto:${CONFIG.myEmail}?subject=Birthday Message&body=${encodeURIComponent(msg)}`;
         }
 
         function checkUnlock(id) {
