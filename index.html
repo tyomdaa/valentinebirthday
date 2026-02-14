@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>System OS v2.4 - Secure Access</title>
+    <title>System OS v2.5 - Secure Access</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&family=Playfair+Display:ital,wght@1,500&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     
     <style>
@@ -11,7 +11,6 @@
             --ios-bg: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 99%, #FECFEF 100%);
             --glass: rgba(255, 255, 255, 0.25);
             --dark-glass: rgba(0, 0, 0, 0.75);
-            --neon: #00f3ff;
         }
 
         * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
@@ -27,20 +26,21 @@
         .loading-bar-wrap { width: 200px; height: 2px; background: #222; margin-top: 30px; position: relative; }
         #boot-progress { width: 0%; height: 100%; background: #fff; transition: width 0.3s; }
 
-        /* --- 2. LOCK SCREEN --- */
+        /* --- 2. LOCK SCREEN (Updated Background) --- */
         #lock-screen {
             position: fixed; inset: 0; z-index: 9000; display: none;
-            background: url('https://images.unsplash.com/photo-1496715044133-466f2431d102?q=80&w=2070') center/cover;
+            background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), 
+                        url('https://images.unsplash.com/photo-1519751138087-5bf79df62d5b?q=80&w=2070') center/cover;
             flex-direction: column; align-items: center; color: white; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .lock-content { padding-top: 15vh; text-align: center; }
         .clock { font-size: 80px; font-weight: 200; letter-spacing: -2px; }
-        .date { font-size: 19px; margin-top: -10px; opacity: 0.8; }
-        .unlock-hint { position: absolute; bottom: 50px; width: 100%; text-align: center; font-size: 14px; opacity: 0.6; animation: pulse 2s infinite; }
+        .date { font-size: 19px; margin-top: -10px; opacity: 0.9; font-weight: 400; }
+        .unlock-hint { position: absolute; bottom: 50px; width: 100%; text-align: center; font-size: 14px; opacity: 0.7; animation: pulse 2s infinite; letter-spacing: 1px; }
 
         /* --- 3. PIN PAD --- */
         #pin-ui {
-            position: absolute; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(25px);
+            position: absolute; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(25px);
             display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9500;
         }
         .pin-dots { display: flex; gap: 20px; margin-bottom: 40px; }
@@ -82,26 +82,21 @@
         .win-close { color: #007aff; font-size: 17px; font-weight: 600; cursor: pointer; }
         .win-body { flex: 1; overflow-y: auto; padding: 25px; -webkit-overflow-scrolling: touch; }
 
-        /* PHOTOS APP */
         .photo-wall { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .photo-card { height: 160px; border-radius: 12px; overflow: hidden; position: relative; background: #e5e5ea; }
         .photo-card img { width: 100%; height: 100%; object-fit: cover; }
         .photo-caption { position: absolute; bottom: 0; width: 100%; background: linear-gradient(transparent, rgba(0,0,0,0.8)); color: white; padding: 10px 5px 5px 5px; font-size: 10px; text-align: center; }
 
-        /* NOTES APP */
         .note-page { background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border-left: 5px solid #ffcc00; }
         .note-title { font-weight: 700; font-size: 16px; margin-bottom: 5px; color: #333; }
         .note-text { font-size: 14px; color: #666; line-height: 1.5; }
 
-        /* MUSIC APP */
         .music-ui { text-align: center; padding-top: 20px; }
         .record-player { width: 240px; height: 240px; border-radius: 50%; background: radial-gradient(circle, #444 10%, #111 100%); margin: 0 auto 30px; display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
         .record-player::after { content: ''; width: 40px; height: 40px; border-radius: 50%; background: #f2f2f7; border: 10px solid #333; }
         .spinning { animation: rotate 4s linear infinite; }
-        .play-trigger { font-size: 60px; cursor: pointer; transition: transform 0.2s; }
-        .play-trigger:active { transform: scale(0.9); }
+        .play-trigger { font-size: 60px; cursor: pointer; }
 
-        /* GIFT APP (LOCKED) */
         #gift-screen-locked { text-align: center; padding-top: 60px; }
         #gift-screen-unlocked { display: none; text-align: center; animation: fadeIn 1.5s; }
         .voucher-box { border: 3px dashed #ff3b30; padding: 30px; border-radius: 20px; background: white; margin: 30px 0; }
@@ -123,10 +118,10 @@
             <div class="clock" id="js-clock">00:00</div>
             <div class="date" id="js-date">February 14, 2026</div>
         </div>
-        <div class="unlock-hint" onclick="togglePin(true)">Tap Screen to Unlock</div>
+        <div class="unlock-hint" onclick="togglePin(true)">Swipe Up to Open</div>
 
         <div id="pin-ui">
-            <h2 style="font-weight: 400; margin-bottom: 20px;">Enter Passcode</h2>
+            <h2 style="font-weight: 400; margin-bottom: 20px; color: #fff;">Enter Passcode</h2>
             <div class="pin-dots">
                 <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
             </div>
@@ -140,11 +135,7 @@
     </div>
 
     <div id="desktop">
-        <div class="status-bar">
-            <span id="stat-time">9:41</span>
-            <span>5G 📶 🔋 100%</span>
-        </div>
-        
+        <div class="status-bar"><span id="stat-time">9:41</span><span>5G 📶 🔋 100%</span></div>
         <div class="app-grid">
             <div class="app-item" onclick="openWin('photos')">
                 <div class="app-icon" style="background: linear-gradient(#ff5e62, #ff9966);">🖼️</div>
@@ -159,207 +150,131 @@
                 <div class="app-label">Music</div>
             </div>
             <div class="app-item" onclick="openWin('gift')">
-                <div class="app-icon" style="background: #111;">
-                    🎁<div class="notification" id="gift-alert">!</div>
-                </div>
+                <div class="app-icon" style="background: #111;">🎁<div class="notification" id="gift-alert">!</div></div>
                 <div class="app-label">Surprise</div>
             </div>
         </div>
     </div>
 
-    <div id="win-photos" class="window">
-        <div class="win-header"><span class="win-close" onclick="closeWin('photos')">Done</span><span style="font-weight:700">Recents</span><span></span></div>
-        <div class="win-body"><div class="photo-wall" id="js-photo-grid"></div></div>
-    </div>
-
-    <div id="win-notes" class="window">
-        <div class="win-header"><span class="win-close" onclick="closeWin('notes')">Done</span><span style="font-weight:700">Personal</span><span></span></div>
-        <div class="win-body" id="js-notes-list"></div>
-    </div>
-
-    <div id="win-music" class="window">
-        <div class="win-header"><span class="win-close" onclick="closeWin('music')">Done</span><span style="font-weight:700">Now Playing</span><span></span></div>
-        <div class="win-body music-ui">
-            <div class="record-player" id="js-record">🎵</div>
-            <h2 id="js-song-name" style="margin-bottom:5px;">Loading...</h2>
-            <p style="color:#888; margin-bottom:40px;">Special Mix for You</p>
-            <div class="play-trigger" id="js-play-icon" onclick="toggleAudio()">▶️</div>
-            <audio id="js-audio-element" loop></audio>
-        </div>
-    </div>
-
-    <div id="win-gift" class="window">
-        <div class="win-header"><span class="win-close" onclick="closeWin('gift')">Done</span><span style="font-weight:700">Gift</span><span></span></div>
-        <div class="win-body">
-            <div id="gift-screen-locked">
-                <div style="font-size: 60px; margin-bottom: 20px;">🔒</div>
-                <h3>Encrypted Content</h3>
-                <p style="color:#666; font-size:14px;">To reveal this message, the system requires you to view all Photos, Notes, and Music tracks first.</p>
-                <p id="js-unlock-status" style="color:#ff3b30; font-weight:600; margin-top:20px;">Status: 0/3 Apps Viewed</p>
-            </div>
-            <div id="gift-screen-unlocked">
-                <h1 style="font-family:'Playfair Display'; font-style:italic; font-size:32px;">Happy Birthday.</h1>
-                <p id="js-final-message"></p>
-                <div class="voucher-box">
-                    <strong style="color:#ff3b30; letter-spacing:2px;">OFFICIAL BIRTHDAY VOUCHER</strong><br>
-                    <p style="font-size:13px; color:#555; margin-top:10px;" id="js-voucher-text"></p>
-                </div>
-                <p style="font-weight: 600;" id="js-signature"></p>
-            </div>
-        </div>
-    </div>
+    <div id="win-photos" class="window"><div class="win-header"><span class="win-close" onclick="closeWin('photos')">Done</span><span style="font-weight:700">Recents</span><span></span></div><div class="win-body"><div class="photo-wall" id="js-photo-grid"></div></div></div>
+    <div id="win-notes" class="window"><div class="win-header"><span class="win-close" onclick="closeWin('notes')">Done</span><span style="font-weight:700">Personal</span><span></span></div><div class="win-body" id="js-notes-list"></div></div>
+    <div id="win-music" class="window"><div class="win-header"><span class="win-close" onclick="closeWin('music')">Done</span><span style="font-weight:700">Now Playing</span><span></span></div><div class="win-body music-ui"><div class="record-player" id="js-record">🎵</div><h2 id="js-song-name">Loading...</h2><div class="play-trigger" id="js-play-icon" onclick="toggleAudio()">▶️</div><audio id="js-audio-element" loop></audio></div></div>
+    <div id="win-gift" class="window"><div class="win-header"><span class="win-close" onclick="closeWin('gift')">Done</span><span style="font-weight:700">Gift</span><span></span></div><div class="win-body"><div id="gift-screen-locked"><div style="font-size:60px;">🔒</div><h3>Encrypted Content</h3><p id="js-unlock-status">Status: 0/3 Apps Viewed</p></div><div id="gift-screen-unlocked"><h1 style="font-family:'Playfair Display'; italic; font-size:32px;">Happy Birthday.</h1><p id="js-final-message"></p><div class="voucher-box"><strong style="color:#ff3b30;">OFFICIAL VOUCHER</strong><p id="js-voucher-text"></p></div><p id="js-signature"></p></div></div></div>
 
     <script>
-        /***********************************************************
-         * 🛠️ USER CUSTOMIZATION BLOCK
-         * Fill in your details here. Make sure links are "RAW" links.
-         ***********************************************************/
         const CONFIG = {
-            passcode: "1402", // Birthday in DDMM format
-            
-            // 📸 4-6 Photo Links (Use raw.githubusercontent.com links)
+            passcode: "1402",
             photos: [
-                { url: "https://raw.githubusercontent.com/tyomdaa/valentinebirthday/main/5226989699501593622(1).jpg", caption: "The beginning of everything." },
-                { url: "https://raw.githubusercontent.com/tyomdaa/valentinebirthday/main/5226989699501593632(1).jpg", caption: "One of my favorite days." },
-                { url: "https://raw.githubusercontent.com/tyomdaa/valentinebirthday/main/5226989699501593673.jpg", caption: "That time we got lost." },
-                { url: "https://raw.githubusercontent.com/tyomdaa/valentinebirthday/main/5226989699501593685.jpg", caption: "Unforgettable memories." }
+                { url: "https://raw.githubusercontent.com/tyomdaa/valentinebirthday/main/5226989699501593622%281%29.jpg", caption: "The beginning." },
+                { url: "https://raw.githubusercontent.com/tyomdaa/valentinebirthday/main/5226989699501593632%281%29.jpg", caption: "My favorite day." },
+                { url: "https://raw.githubusercontent.com/tyomdaa/valentinebirthday/main/5226989699501593673.jpg", caption: "random pic" }, // <--- Updated
+                { url: "https://raw.githubusercontent.com/tyomdaa/valentinebirthday/main/5226989699501593685.jpg", caption: "favourite pic" } // <--- Updated
             ],
-
-            // 🎵 1 MP3 Song Link
-            music: {
-                url: "https://raw.githubusercontent.com/tyomdaa/valentinebirthday/main/lenker.mp3",
-                title: "Our Song"
-            },
-
-            // 📝 3 Note Entries
+            music: { url: "https://raw.githubusercontent.com/tyomdaa/valentinebirthday/main/lenkker.mp3", title: "Lenker" },
             notes: [
                 { title: "On Your Resilience", text: "I've always admired how you handle the world. You have a strength that most people never see." },
                 { title: "The Best Sound", text: "Your laugh is still the best sound I've ever heard. Don't ever let the world quiet it down." },
                 { title: "Happy Birthday", text: "I'm still rooting for you to hit every goal you've set for yourself. I know you will." }
             ],
-
-            // 🎁 Final Message
-            finalMessage: "I built this to show you that even though chapters change, the respect I have for your story doesn't. You deserve a year that's as incredible as you are.",
-            voucher: "Valid for: One Coffee, a walk, or just a listening ear. No expiration date.",
+            finalMessage: "I built this to show you that even though chapters change, the respect I have for your story doesn't.",
+            voucher: "Valid for: One Coffee or a long walk.",
             signature: "— Your Name"
         };
 
-        /***********************************************************
-         * ⚙️ SYSTEM LOGIC (DO NOT EDIT UNLESS YOU ARE BRAVE)
-         ***********************************************************/
         let currentPin = "";
         let viewedApps = { photos: false, notes: false, music: false };
 
-        // 1. Boot Sequence
-        const logs = ["Initializing Kernel...", "Loading User profile...", "Syncing cloud data...", "Decrypting media partition...", "System Ready."];
-        let logIdx = 0;
         function runBoot() {
+            const logs = ["Initializing System...", "Kernel v2.5.4 Loaded", "Media Partition Decrypted", "Access Granted"];
+            let i = 0;
             const logEl = document.getElementById('boot-log');
-            if(logIdx < logs.length) {
-                logEl.innerHTML += `> ${logs[logIdx]}<br>`;
-                document.getElementById('boot-progress').style.width = ((logIdx + 1) / logs.length) * 100 + "%";
-                logIdx++;
-                setTimeout(runBoot, 600);
-            } else {
-                setTimeout(() => {
+            const interval = setInterval(() => {
+                if(i < logs.length) {
+                    logEl.innerHTML += "> " + logs[i] + "<br>";
+                    document.getElementById('boot-progress').style.width = ((i+1)/logs.length)*100 + "%";
+                    i++;
+                } else {
+                    clearInterval(interval);
                     document.getElementById('boot-screen').style.display = 'none';
                     document.getElementById('lock-screen').style.display = 'flex';
                     initSystem();
-                }, 800);
-            }
+                }
+            }, 600);
         }
-        window.onload = runBoot;
 
-        // 2. Clock/Date
+        function initSystem() {
+            updateTime();
+            const photoGrid = document.getElementById('js-photo-grid');
+            CONFIG.photos.forEach(p => {
+                photoGrid.innerHTML += `<div class="photo-card"><img src="${p.url}"><div class="photo-caption">${p.caption}</div></div>`;
+            });
+            const noteList = document.getElementById('js-notes-list');
+            CONFIG.notes.forEach(n => {
+                noteList.innerHTML += `<div class="note-page"><div class="note-title">${n.title}</div><div class="note-text">${n.text}</div></div>`;
+            });
+            document.getElementById('js-audio-element').src = CONFIG.music.url;
+            document.getElementById('js-song-name').innerText = CONFIG.music.title;
+            document.getElementById('js-final-message').innerText = CONFIG.finalMessage;
+            document.getElementById('js-voucher-text').innerText = CONFIG.voucher;
+            document.getElementById('js-signature').innerText = CONFIG.signature;
+        }
+
         function updateTime() {
-            const now = new Date();
-            const timeStr = now.getHours() + ":" + String(now.getMinutes()).padStart(2, '0');
-            document.getElementById('js-clock').innerText = timeStr;
-            document.getElementById('stat-time').innerText = timeStr;
+            const n = new Date();
+            const hours = n.getHours();
+            const mins = String(n.getMinutes()).padStart(2, '0');
+            const time = hours + ":" + mins;
+            document.getElementById('js-clock').innerText = time;
+            document.getElementById('stat-time').innerText = time;
             const options = { weekday: 'long', month: 'long', day: 'numeric' };
-            document.getElementById('js-date').innerText = now.toLocaleDateString('en-US', options);
+            document.getElementById('js-date').innerText = n.toLocaleDateString('en-US', options);
             setTimeout(updateTime, 1000);
         }
 
-        // 3. PIN Logic
         function togglePin(show) { document.getElementById('pin-ui').style.display = show ? 'flex' : 'none'; }
+        
         function pressPin(n) {
             if(currentPin.length < 4) {
                 currentPin += n;
-                updateDots();
+                const dots = document.querySelectorAll('.pin-dot');
+                dots.forEach((d, i) => d.className = i < currentPin.length ? 'pin-dot filled' : 'pin-dot');
                 if(currentPin === CONFIG.passcode) {
-                    unlockPhone();
+                    document.getElementById('lock-screen').style.transform = "translateY(-100%)";
+                    setTimeout(() => {
+                        document.getElementById('lock-screen').style.display = "none";
+                        document.getElementById('desktop').style.display = "flex";
+                    }, 600);
                 } else if(currentPin.length === 4) {
                     setTimeout(clearPin, 300);
                 }
             }
         }
-        function clearPin() { currentPin = ""; updateDots(); }
-        function updateDots() {
-            const dots = document.querySelectorAll('.pin-dot');
-            dots.forEach((d, i) => d.className = i < currentPin.length ? 'pin-dot filled' : 'pin-dot');
-        }
-        function unlockPhone() {
-            document.getElementById('lock-screen').style.transform = "translateY(-100%)";
-            setTimeout(() => {
-                document.getElementById('lock-screen').style.display = "none";
-                document.getElementById('desktop').style.display = "flex";
-            }, 600);
-        }
+        function clearPin() { currentPin = ""; const dots = document.querySelectorAll('.pin-dot'); dots.forEach(d => d.className = 'pin-dot'); }
 
-        // 4. App Management
         function openWin(id) {
             document.getElementById('win-' + id).classList.add('active');
             if(viewedApps.hasOwnProperty(id)) {
                 viewedApps[id] = true;
-                updateUnlockStatus();
+                const count = Object.values(viewedApps).filter(v => v).length;
+                document.getElementById('js-unlock-status').innerText = `Status: ${count}/3 Apps Viewed`;
+                if(count === 3) {
+                    document.getElementById('gift-screen-locked').style.display = 'none';
+                    document.getElementById('gift-screen-unlocked').style.display = 'block';
+                    document.getElementById('gift-alert').style.display = 'none';
+                }
             }
         }
         function closeWin(id) { document.getElementById('win-' + id).classList.remove('active'); }
 
-        function updateUnlockStatus() {
-            const count = Object.values(viewedApps).filter(v => v).length;
-            document.getElementById('js-unlock-status').innerText = `Status: ${count}/3 Apps Viewed`;
-            if(count === 3) {
-                document.getElementById('gift-screen-locked').style.display = 'none';
-                document.getElementById('gift-screen-unlocked').style.display = 'block';
-                document.getElementById('gift-alert').style.display = 'none';
-            }
-        }
-
-        // 5. Audio Logic
         function toggleAudio() {
-            const audio = document.getElementById('js-audio-element');
-            const icon = document.getElementById('js-play-icon');
-            const disk = document.getElementById('js-record');
-            if(audio.paused) {
-                audio.play(); icon.innerText = "⏸️"; disk.classList.add('spinning');
-            } else {
-                audio.pause(); icon.innerText = "▶️"; disk.classList.remove('spinning');
-            }
+            const a = document.getElementById('js-audio-element');
+            const i = document.getElementById('js-play-icon');
+            const r = document.getElementById('js-record');
+            if(a.paused) { a.play(); i.innerText = "⏸️"; r.classList.add('spinning'); }
+            else { a.pause(); i.innerText = "▶️"; r.classList.remove('spinning'); }
         }
 
-        // 6. Content Loader
-        function initSystem() {
-            updateTime();
-            // Load Photos
-            const photoGrid = document.getElementById('js-photo-grid');
-            CONFIG.photos.forEach(p => {
-                photoGrid.innerHTML += `<div class="photo-card"><img src="${p.url}" onerror="this.src='https://via.placeholder.com/300?text=Image+Error'"><div class="photo-caption">${p.caption}</div></div>`;
-            });
-            // Load Notes
-            const noteList = document.getElementById('js-notes-list');
-            CONFIG.notes.forEach(n => {
-                noteList.innerHTML += `<div class="note-page"><div class="note-title">${n.title}</div><div class="note-text">${n.text}</div></div>`;
-            });
-            // Load Music
-            document.getElementById('js-audio-element').src = CONFIG.music.url;
-            document.getElementById('js-song-name').innerText = CONFIG.music.title;
-            // Load Final
-            document.getElementById('js-final-message').innerText = CONFIG.finalMessage;
-            document.getElementById('js-voucher-text').innerText = CONFIG.voucher;
-            document.getElementById('js-signature').innerText = CONFIG.signature;
-        }
+        window.onload = runBoot;
     </script>
 </body>
 </html>
