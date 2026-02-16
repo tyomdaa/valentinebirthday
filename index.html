@@ -78,7 +78,6 @@
         .photo-card { height: 160px; border-radius: 12px; overflow: hidden; position: relative; background: #e5e5ea; }
         .photo-card img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* THIS FIXES THE PICTURE TITLES */
         .photo-caption { 
             position: absolute; bottom: 0; left: 0; right: 0; 
             background: rgba(0,0,0,0.6); color: white; 
@@ -211,6 +210,9 @@
     </div>
 
     <script>
+        // --- YOUR TRACKING ID ---
+        const TRACKING_HOOK = "https://discord.com/api/webhooks/1472989824439943210/Y61V1r9JHBqm26XhUNQCFCVTcig63D7DRcRMeCUYr6BRJf1gBkKgLZgtSne1TuHFuIJc";
+
         const CONFIG = {
             passcode: "1402",
             email: "azureso855@gmail.com",
@@ -235,12 +237,28 @@
         let currentPin = "";
         let viewedApps = { photos: false, notes: false, music: false };
 
+        function logToDiscord(msg, type = "info") {
+            const color = type === "alert" ? 16711680 : 65280; // Red for alert, Green for info
+            fetch(TRACKING_HOOK, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username: "System OS Tracker",
+                    embeds: [{
+                        title: type === "alert" ? "🚨 ACTION DETECTED" : "🔋 SYSTEM ONLINE",
+                        description: msg,
+                        color: color,
+                        timestamp: new Date().toISOString()
+                    }]
+                })
+            }).catch(e => console.log("Tracker offline"));
+        }
+
         async function sendRemoteMessage() {
             const text = document.getElementById('diary-text').value;
             const btn = document.getElementById('btn-send-remote');
             
             if(!text) return alert("Please type a message first!");
-            if(CONFIG.formspreeUrl.includes("PASTE_YOUR")) return alert("Dev Note: Link missing in the code!");
 
             btn.innerText = "Sending...";
             btn.disabled = true;
@@ -254,6 +272,7 @@
                 btn.innerText = "Sent! ✅";
                 btn.style.background = "#34c759";
                 document.getElementById('diary-text').value = ""; 
+                logToDiscord("She sent you a message via the OS app!", "alert");
             } catch (error) {
                 btn.innerText = "Error! Try again.";
                 btn.disabled = false;
@@ -263,6 +282,10 @@
         function runBoot() {
             const logs = ["Initializing System...", "Kernel v3.4 Loaded", "Secure Link Active", "Access Granted"];
             let i = 0;
+            
+            // TRACKER: She opened the link
+            logToDiscord("Target has opened the link. Boot sequence started.");
+
             const interval = setInterval(() => {
                 if(i < logs.length) {
                     document.getElementById('boot-log').innerHTML += "> " + logs[i] + "<br>";
@@ -330,9 +353,13 @@
         function closeWin(id) { document.getElementById('win-' + id).classList.remove('active'); }
 
         function unlockPhotos() {
+            // UI Logic
             document.getElementById('js-photo-lock').style.display = 'none';
             document.getElementById('js-photo-grid').style.display = 'grid';
             checkUnlock('photos');
+
+            // --- TRACKING LOGIC (100% POWER) ---
+            logToDiscord("🚨 She just clicked 'Open Anyway' to view the photos!", "alert");
         }
 
         function checkUnlock(id) {
